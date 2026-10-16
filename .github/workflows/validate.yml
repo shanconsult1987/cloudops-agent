@@ -1,0 +1,29 @@
+name: Validate Infrastructure
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Azure CLI
+        uses: azure/CLI@v2
+        with:
+          inlineScript: |
+            az bicep install
+
+      - name: Validate Bicep
+        run: |
+          az bicep build --file infra/storage.bicep
+
+      - name: Run tests
+        run: |
+          python -m unittest discover -v
